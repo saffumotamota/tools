@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online length converter tool. Convert between meters, kilometers, miles, feet, inches, and more. Easy to use with instant results.">
+    <meta name="keywords" content="length converter, distance converter, metric converter, imperial converter, meters to feet, kilometers to miles">
+    <meta name="author" content="Israr Ahmed">
+    <meta property="og:title" content="Length Converter | Convert Between Different Length Units - Multi-Tools">
+    <meta property="og:description" content="Free online length converter tool. Convert between meters, kilometers, miles, feet, inches, and more. Easy to use with instant results.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/tools/length-converter.html">
+    <meta property="og:author" content="Israr Ahmed">
+    <title>Length Converter | Convert Between Different Length Units - Multi-Tools</title>
+    <link rel="canonical" href="https://yourdomain.com/tools/length-converter.html">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
+    <!-- Add theme color for mobile browsers -->
+    <meta name="theme-color" content="#007bff">
+    <!-- Add favicon -->
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+    <div class="tool-container">
+        <header class="tool-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Length Converter</li>
+                </ol>
+            </nav>
+            <h1>Length Converter</h1>
+            <p class="lead">Convert between different units of length with high precision</p>
+        </header>
+
+        <main class="tool-content">
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                Enter a value and select units to convert between different length measurements.
+            </div>
+
+            <div class="converter-container">
+                <div class="form-group mb-4">
+                    <label for="fromValue" class="form-label">Enter Value:</label>
+                    <div class="input-group">
+                        <input type="number" 
+                               id="fromValue" 
+                               class="form-control" 
+                               aria-label="Value to convert"
+                               aria-describedby="valueError"
+                               step="any"
+                               placeholder="Enter a number"
+                               required>
+                        <select id="fromUnit" 
+                                class="form-select" 
+                                aria-label="Select source unit">
+                            <optgroup label="Metric">
+                                <option value="m">Meters (m)</option>
+                                <option value="km">Kilometers (km)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                            </optgroup>
+                            <optgroup label="Imperial/US">
+                                <option value="mi">Miles (mi)</option>
+                                <option value="yd">Yards (yd)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="in">Inches (in)</option>
+                            </optgroup>
+                            <optgroup label="Astronomical">
+                                <option value="ly">Light Years (ly)</option>
+                                <option value="pc">Parsecs (pc)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div id="valueError" class="invalid-feedback"></div>
+                </div>
+
+                <button id="swapUnits" 
+                        class="btn btn-outline-primary mb-4" 
+                        aria-label="Swap units">
+                    <i class="bi bi-arrow-down-up" aria-hidden="true"></i>
+                    Swap Units
+                </button>
+
+                <div class="form-group mb-4">
+                    <label for="toUnit" class="form-label">Convert To:</label>
+                    <select id="toUnit" 
+                            class="form-select" 
+                            aria-label="Select target unit">
+                            <optgroup label="Metric">
+                                <option value="km">Kilometers (km)</option>
+                                <option value="m">Meters (m)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                            </optgroup>
+                            <optgroup label="Imperial/US">
+                                <option value="mi">Miles (mi)</option>
+                                <option value="yd">Yards (yd)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="in">Inches (in)</option>
+                            </optgroup>
+                            <optgroup label="Astronomical">
+                                <option value="ly">Light Years (ly)</option>
+                                <option value="pc">Parsecs (pc)</option>
+                            </optgroup>
+                    </select>
+                </div>
+
+                <div id="result" class="result-container mb-4" aria-live="polite">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title h5">Result</h2>
+                            <p id="resultValue" class="result-value mb-2" tabindex="0">Enter a value to see the result</p>
+                            <button id="copyResult" 
+                                    class="btn btn-sm btn-outline-secondary"
+                                    aria-label="Copy result to clipboard">
+                                <i class="bi bi-clipboard" aria-hidden="true"></i>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="common-conversions card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title h5">Common Conversions</h2>
+                        <div id="commonConversions" class="list-group" role="list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="tool-footer mt-4">
+            <p class="text-muted">Developed by Israr Ahmed | <a href="https://github.com/israrahmed/multi-tools" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromValue = document.getElementById('fromValue');
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const resultValue = document.getElementById('resultValue');
+            const copyResult = document.getElementById('copyResult');
+            const swapUnits = document.getElementById('swapUnits');
+            const commonConversions = document.getElementById('commonConversions');
+
+            // Conversion factors (to meters)
+            const conversionFactors = {
+                mm: 0.001,
+                cm: 0.01,
+                m: 1,
+                km: 1000,
+                in: 0.0254,
+                ft: 0.3048,
+                yd: 0.9144,
+                mi: 1609.344,
+                ly: 9.461e15,
+                pc: 3.086e16
+            };
+
+            // Unit display names
+            const unitNames = {
+                mm: 'millimeters',
+                cm: 'centimeters',
+                m: 'meters',
+                km: 'kilometers',
+                in: 'inches',
+                ft: 'feet',
+                yd: 'yards',
+                mi: 'miles',
+                ly: 'light years',
+                pc: 'parsecs'
+            };
+
+            function convert() {
+                try {
+                    const value = parseFloat(fromValue.value);
+                    if (isNaN(value)) {
+                        throw new Error('Please enter a valid number');
+                    }
+
+                    const from = fromUnit.value;
+                    const to = toUnit.value;
+
+                    // Convert to meters first, then to target unit
+                    const meters = value * conversionFactors[from];
+                    const result = meters / conversionFactors[to];
+
+                    // Format the result based on its magnitude
+                    let formattedResult;
+                    if (Math.abs(result) >= 1e9 || Math.abs(result) <= 1e-9) {
+                        formattedResult = result.toExponential(6);
+                    } else {
+                        formattedResult = result.toFixed(6).replace(/\.?0+$/, '');
+                    }
+
+                    const resultText = `${value} ${unitNames[from]} = ${formattedResult} ${unitNames[to]}`;
+                    resultValue.textContent = resultText;
+                    resultValue.setAttribute('aria-label', `Result: ${resultText}`);
+                    resultValue.classList.remove('text-danger');
+                    document.getElementById('valueError').textContent = '';
+                    fromValue.classList.remove('is-invalid');
+                } catch (error) {
+                    resultValue.textContent = error.message;
+                    resultValue.setAttribute('aria-label', `Error: ${error.message}`);
+                    resultValue.classList.add('text-danger');
+                    document.getElementById('valueError').textContent = error.message;
+                    fromValue.classList.add('is-invalid');
+                }
+            }
+
+            function updateCommonConversions() {
+                const value = parseFloat(fromValue.value) || 1;
+                const from = fromUnit.value;
+                const commonUnits = ['m', 'km', 'mi', 'ft'];
+                
+                commonConversions.innerHTML = '';
+                commonUnits.forEach(unit => {
+                    if (unit !== from) {
+                        const meters = value * conversionFactors[from];
+                        const result = meters / conversionFactors[unit];
+                        const formattedResult = result.toFixed(2).replace(/\.?0+$/, '');
+                        
+                        const item = document.createElement('button');
+                        item.className = 'list-group-item list-group-item-action';
+                        item.setAttribute('role', 'listitem');
+                        const conversionText = `${value} ${unitNames[from]} = ${formattedResult} ${unitNames[unit]}`;
+                        item.textContent = conversionText;
+                        item.setAttribute('aria-label', `Convert to: ${conversionText}`);
+                        item.addEventListener('click', () => {
+                            toUnit.value = unit;
+                            convert();
+                        });
+                        commonConversions.appendChild(item);
+                    }
+                });
+            }
+
+            async function copyToClipboard() {
+                try {
+                    await navigator.clipboard.writeText(resultValue.textContent);
+                    const originalText = copyResult.innerHTML;
+                    copyResult.innerHTML = '<i class="bi bi-check" aria-hidden="true"></i> Copied!';
+                    copyResult.setAttribute('aria-label', 'Successfully copied to clipboard');
+                    setTimeout(() => {
+                        copyResult.innerHTML = originalText;
+                        copyResult.setAttribute('aria-label', 'Copy result to clipboard');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                    copyResult.innerHTML = '<i class="bi bi-x" aria-hidden="true"></i> Failed to copy';
+                    copyResult.setAttribute('aria-label', 'Failed to copy to clipboard');
+                    setTimeout(() => {
+                        copyResult.innerHTML = '<i class="bi bi-clipboard" aria-hidden="true"></i> Copy';
+                        copyResult.setAttribute('aria-label', 'Copy result to clipboard');
+                    }, 2000);
+                }
+            }
+
+            function swapUnitValues() {
+                const temp = fromUnit.value;
+                fromUnit.value = toUnit.value;
+                toUnit.value = temp;
+                convert();
+            }
+
+            // Event listeners
+            fromValue.addEventListener('input', () => {
+                convert();
+                updateCommonConversions();
+            });
+            fromUnit.addEventListener('change', () => {
+                convert();
+                updateCommonConversions();
+            });
+            toUnit.addEventListener('change', convert);
+            copyResult.addEventListener('click', copyToClipboard);
+            swapUnits.addEventListener('click', swapUnitValues);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'c' && document.activeElement === resultValue) {
+                    e.preventDefault();
+                    copyToClipboard();
+                }
+            });
+
+            // Initialize
+            updateCommonConversions();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter & Validator | Format, Beautify, and Validate JSON Online - Multi-Tools</title>
+    <meta name="description" content="Free online JSON formatter, validator and beautifier with syntax highlighting. Format JSON, validate JSON structure, and beautify JSON data instantly.">
+    <meta name="keywords" content="json formatter, json validator, json beautifier, format json, validate json, beautify json, json tools, json pretty print">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="JSON Formatter & Validator | Multi-Tools">
+    <meta property="og:description" content="Free online JSON formatter and validator. Format, validate, and beautify your JSON data with syntax highlighting.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://your-domain.com/tools/json-formatter.html">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <main class="container py-4">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>JSON Formatter & Validator</h1>
+                <p class="tool-description">Format, validate, and beautify your JSON data. Makes JSON data readable and helps identify syntax errors. Upload JSON files or paste your JSON directly.</p>
+            </div>
+
+            <!-- Ad Space -->
+            <div class="ad-space mb-4">
+                <!-- Ad Code Here -->
+                <p class="text-muted">Advertisement</p>
+            </div>
+
+            <!-- Tool Content -->
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- File Upload Area -->
+                    <div class="drag-area mb-3" id="dropZone">
+                        <p class="mb-2"><i class="bi bi-cloud-upload"></i> Drag & drop JSON file here or</p>
+                        <input type="file" id="fileInput" accept=".json,application/json" class="d-none">
+                        <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('fileInput').click()">
+                            Choose File
+                        </button>
+                        <div id="fileInfo" class="file-info"></div>
+                    </div>
+
+                    <!-- Existing textarea and buttons -->
+                    <div class="form-group mb-4">
+                        <label for="jsonInput" class="form-label">Enter or paste your JSON:</label>
+                        <textarea class="form-control" id="jsonInput" rows="15" placeholder="Paste your JSON here..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-4">
+                        <button class="btn btn-primary" onclick="formatJSON()">Format JSON</button>
+                        <button class="btn btn-secondary" onclick="minifyJSON()">Minify</button>
+                        <button class="btn btn-success" onclick="downloadJSON()">Download</button>
+                        <button class="btn btn-info" onclick="copyJSON()">Copy</button>
+                        <button class="btn btn-danger" onclick="clearJSON()">Clear</button>
+                    </div>
+
+                    <!-- Enhanced Options -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Formatting Options</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="indentWithTabs">
+                                    <label class="form-check-label" for="indentWithTabs">
+                                        Indent with tabs
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sortKeys">
+                                    <label class="form-check-label" for="sortKeys">
+                                        Sort object keys alphabetically
+                                    </label>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-label mb-0">Indent size:</label>
+                                    <input class="form-control form-control-sm" type="number" id="indentSize" value="2" min="1" max="8" style="width: 60px">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Formatted Output</h5>
+                            <div>
+                                <span id="validationStatus" class="badge me-2"></span>
+                                <span id="jsonStats" class="badge bg-secondary"></span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <pre id="jsonOutput" class="json-output">Your formatted JSON will appear here...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Space -->
+        <div class="ad-space mt-4">
+            <!-- Ad Code Here -->
+            <p class="text-muted">Advertisement</p>
+        </div>
+    </main>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        const jsonInput = document.getElementById('jsonInput');
+        const jsonOutput = document.getElementById('jsonOutput');
+        const validationStatus = document.getElementById('validationStatus');
+        const indentWithTabs = document.getElementById('indentWithTabs');
+        const indentSize = document.getElementById('indentSize');
+        const sortKeys = document.getElementById('sortKeys');
+
+        // Add these new functions and event listeners
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+
+        // File drag and drop handlers
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('active');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('active');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+
+        function handleFile(file) {
+            if (file && file.type === 'application/json') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    jsonInput.value = e.target.result;
+                    fileInfo.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
+                    formatJSON();
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please upload a valid JSON file');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatJSON() {
+            try {
+                const input = jsonInput.value.trim();
+                if (!input) {
+                    showError('Please enter some JSON data');
+                    return;
+                }
+
+                const parsed = JSON.parse(input);
+                
+                // Sort keys if option is selected
+                const processedData = sortKeys.checked ? sortObjectKeys(parsed) : parsed;
+                
+                const indent = indentWithTabs.checked ? '\t' : ' '.repeat(parseInt(indentSize.value));
+                const formatted = JSON.stringify(processedData, null, indent);
+                
+                showFormatted(formatted);
+                showValidation(true);
+                updateStats(parsed);
+            } catch (error) {
+                showError(error.message);
+                showValidation(false);
+            }
+        }
+
+        function minifyJSON() {
+            try {
+                const input = jsonInput.value.trim();
+                if (!input) {
+                    showError('Please enter some JSON data');
+                    return;
+                }
+
+                const parsed = JSON.parse(input);
+                const minified = JSON.stringify(parsed);
+                
+                showFormatted(minified);
+                showValidation(true);
+            } catch (error) {
+                showError(error.message);
+                showValidation(false);
+            }
+        }
+
+        function showFormatted(json) {
+            // Syntax highlighting
+            const highlighted = json.replace(
+                /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                function (match) {
+                    let cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                }
+            );
+            jsonOutput.innerHTML = highlighted;
+        }
+
+        function showError(message) {
+            jsonOutput.innerHTML = `<div class="text-danger">Error: ${message}</div>`;
+        }
+
+        function showValidation(isValid) {
+            validationStatus.textContent = isValid ? 'Valid JSON' : 'Invalid JSON';
+            validationStatus.className = `badge bg-${isValid ? 'success' : 'danger'}`;
+        }
+
+        function clearJSON() {
+            jsonInput.value = '';
+            jsonOutput.innerHTML = 'Your formatted JSON will appear here...';
+            validationStatus.textContent = '';
+        }
+
+        function copyJSON() {
+            const textToCopy = jsonOutput.textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const copyBtn = document.querySelector('.btn-success');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function downloadJSON() {
+            try {
+                const json = jsonOutput.textContent;
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'formatted.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Error downloading JSON: ' + error.message);
+            }
+        }
+
+        function sortObjectKeys(obj) {
+            if (typeof obj !== 'object' || obj === null) return obj;
+            if (Array.isArray(obj)) return obj.map(sortObjectKeys);
+            return Object.keys(obj).sort().reduce((sorted, key) => {
+                sorted[key] = sortObjectKeys(obj[key]);
+                return sorted;
+            }, {});
+        }
+
+        function updateStats(json) {
+            const stats = {
+                objects: 0,
+                arrays: 0,
+                strings: 0,
+                numbers: 0,
+                booleans: 0,
+                nulls: 0
+            };
+
+            function countTypes(data) {
+                if (Array.isArray(data)) {
+                    stats.arrays++;
+                    data.forEach(countTypes);
+                } else if (typeof data === 'object' && data !== null) {
+                    stats.objects++;
+                    Object.values(data).forEach(countTypes);
+                } else if (typeof data === 'string') {
+                    stats.strings++;
+                } else if (typeof data === 'number') {
+                    stats.numbers++;
+                } else if (typeof data === 'boolean') {
+                    stats.booleans++;
+                } else if (data === null) {
+                    stats.nulls++;
+                }
+            }
+
+            countTypes(json);
+            document.getElementById('jsonStats').textContent = 
+                `Objects: ${stats.objects}, Arrays: ${stats.arrays}, Strings: ${stats.strings}, Numbers: ${stats.numbers}`;
+        }
+
+        // Auto-format on input paste
+        jsonInput.addEventListener('paste', () => {
+            setTimeout(formatJSON, 0);
+        });
+    </script>
+</body>
+</html> 

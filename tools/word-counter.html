@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter - Multi-Tools</title>
+    <meta name="description" content="Free online word counter tool. Count words, characters, sentences, and paragraphs in your text.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-placeholder"></div>
+
+    <main class="container py-4">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>Word Counter</h1>
+                <p class="tool-description">Count words, characters, sentences, and paragraphs in your text. Perfect for essays, articles, and content writing.</p>
+            </div>
+
+            <!-- Ad Space -->
+            <div class="ad-space mb-4">
+                <!-- Ad Code Here -->
+                <p class="text-muted">Advertisement</p>
+            </div>
+
+            <!-- Tool Content -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group mb-4">
+                        <label for="textInput" class="form-label">Enter or paste your text below:</label>
+                        <textarea class="form-control" id="textInput" rows="10" placeholder="Type or paste your text here..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-4">
+                        <button class="btn btn-primary" onclick="clearText()">Clear Text</button>
+                        <button class="btn btn-secondary" onclick="copyText()">Copy Text</button>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Words:</span>
+                                    <strong id="wordCount">0</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Characters (with spaces):</span>
+                                    <strong id="charCountWithSpaces">0</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Characters (no spaces):</span>
+                                    <strong id="charCountNoSpaces">0</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Sentences:</span>
+                                    <strong id="sentenceCount">0</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Paragraphs:</span>
+                                    <strong id="paragraphCount">0</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Space -->
+        <div class="ad-space mt-4">
+            <!-- Ad Code Here -->
+            <p class="text-muted">Advertisement</p>
+        </div>
+    </main>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Get DOM elements
+        const textInput = document.getElementById('textInput');
+        const wordCount = document.getElementById('wordCount');
+        const charCountWithSpaces = document.getElementById('charCountWithSpaces');
+        const charCountNoSpaces = document.getElementById('charCountNoSpaces');
+        const sentenceCount = document.getElementById('sentenceCount');
+        const paragraphCount = document.getElementById('paragraphCount');
+
+        // Update counts when text changes
+        textInput.addEventListener('input', updateCounts);
+
+        function updateCounts() {
+            const text = textInput.value;
+            
+            // Count words
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            wordCount.textContent = words.length;
+            
+            // Count characters
+            charCountWithSpaces.textContent = text.length;
+            charCountNoSpaces.textContent = text.replace(/\s/g, '').length;
+            
+            // Count sentences
+            const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0);
+            sentenceCount.textContent = sentences.length;
+            
+            // Count paragraphs
+            const paragraphs = text.split(/\n\s*\n/).filter(para => para.trim().length > 0);
+            paragraphCount.textContent = paragraphs.length;
+        }
+
+        // Clear text
+        function clearText() {
+            textInput.value = '';
+            updateCounts();
+        }
+
+        // Copy text
+        function copyText() {
+            textInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const btn = document.querySelector('button:nth-child(2)');
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+    </script>
+</body>
+</html> 
